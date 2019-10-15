@@ -14,13 +14,6 @@
 <body>
 
 	<table align="center">
-		<tr>
-			<td width="100px" align='center'><a href='./auth'> LOGIN</a></td>
-			<td width="100px" align='center'><a href='./register'>REGISTER</a></td>
-		</tr>
-	</table>
-
-	<table align="center">
 			<tr>
 				<td>
 					<form id="loginForm" action="./auth" method="post">
@@ -32,8 +25,7 @@
 						</div>
 
 						<div class="field">
-							<a href="#" id="forgot">Forgot your password?</a> <label>Enter
-								your password:</label>
+							 <label>Enter your password:</label>
 							<div class="input">
 								<input type="password" name="Password" value="" id="Password" />
 							</div>
@@ -41,8 +33,6 @@
 
 						<div class="submit">
 							<button type="submit">Enter</button>
-							<label id="remember"><input name="" type="checkbox"
-								value="" /> Remember me</label>
 						</div>
 					</form>
 				</td>

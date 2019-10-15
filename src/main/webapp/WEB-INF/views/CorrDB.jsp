@@ -13,13 +13,6 @@
 </head>
 <body>
 
-	<table align="center">
-		<tr>
-		<td width="100px" align='center'><a href='./auth?logOut=ok'> LOGOUT</a></td>
-			<td width="100px" align='center'><a href='./correct'>CORRECT</a></td>
-		</tr>
-	</table>
-
 	<c:choose>
 		<c:when test="${showCorrForm == 'true'}">
 

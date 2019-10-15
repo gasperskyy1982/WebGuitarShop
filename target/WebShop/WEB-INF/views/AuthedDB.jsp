@@ -13,11 +13,7 @@
 </head>
 <body>
 	<table align="center">
-		<tr>
-			<td width="100px" align='center'><a href='./auth?logOut=ok'> LOGOUT</a></td>
-			<td width="100px" align='center'><a href='./correct'>CORRECT</a></td>
-		</tr>
-
+	
 		<tr>
 			<td align="center">Hello!
 				<h1>${authUser.name}</h1> <br />

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page isELIgnored="false"%>
 <%@ include file="/WEB-INF/include/Header.jsp"%>
-
+<script src = "https://code.jquery.com/jquery-3.4.1.js"></script>
 
 <h1>Product page</h1>
 <div style="color: white">
@@ -20,13 +20,57 @@
 			<tr>
 				<td>price:${product.price}</td>
 				<td>
-				<form action = "./cart" method = "post"><input type = "hidden" name ="productToBuy" value ="${product.id}" /> 
-				<input type="submit" value="buy" />
+				<table>
+				<tr>
 				
-			</form></td></tr>
+				<td><img src="./images/-.png" height="20" id = "-" onclick = "minus(${product.id})"></td>	
+				<td><div id = "numberProduct${product.id}"> 0 </div></td>
+				<td><img src="./images/+.png" height="20" id = "+" onclick = "plus(${product.id})"></td>
+				<td> 
+				<input type="submit" value="buy" onclick = "submit(${product.id})"/></td>
+			</table>
+			</td></tr>
 		</table>
 		<br>
 		<br>
 	</c:forEach>
 </div>
+
+<script>
+function minus(id) {
+	
+var number = document.getElementById("numberProduct" + id).innerHTML;	
+	if (number >= 2) {
+	number--;
+	document.getElementById("numberProduct" + id).innerHTML = number;	
+	}
+}
+
+function plus(id){
+	var number = document.getElementById("numberProduct"+id).innerHTML;
+	number ++;
+	document.getElementById("numberProduct" + id).innerHTML = number;
+}
+
+function submit(id) {
+	var number = document.getElementById("numberProduct"+id).innerHTML;
+	if (number>=1) {
+$.ajax({
+        url:     "./cart", 
+        type:     "POST", 
+        dataType: "html", 
+		data: "productToBuy=" + id + "&qnt=" + number,
+        success: function(response) { 
+        },
+        error: function(response) { // Данные не отправлены
+            document.getElementById(result_form).innerHTML = "Ошибка. Данные не отправленны.";
+        }
+    });
+	}
+}
+</script>
+
+
 <%@ include file="/WEB-INF/include/Footer.jsp"%>
+
+

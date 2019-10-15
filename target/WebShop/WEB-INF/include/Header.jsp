@@ -20,8 +20,8 @@ Released   : 20110926
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title>Guitar shop by Alex</title>
 <link href="./styles/style.css" rel="stylesheet" type="text/css" media="screen" />
-<script type="text/javascript" src="jquery-1.6.2.min.js"></script>
-<script type="text/javascript" src="jquery.poptrox-0.1.js"></script>
+<script type="text/javascript" src="./javascripts/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="./javascripts/jquery.poptrox-0.1.js"></script>
 </head>
 <body>
 <div id="header" class="container">
@@ -40,7 +40,7 @@ Released   : 20110926
 			</c:when>
 			<c:otherwise>
 			<li><a href="./correct">Редактирование</a></li>
-			<li><a href="./authed">Выход</a></li>
+			<li><a href="./auth?logOut=ok">Выход</a></li>
 			</c:otherwise>
 			</c:choose>
 			<li><a href="./cart">Корзина</a></li>

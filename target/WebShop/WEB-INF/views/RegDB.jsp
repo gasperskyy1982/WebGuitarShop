@@ -13,13 +13,6 @@
 </head>
 <body>
 
-	<table align="center">
-		<tr>
-			<td width="100px" align='center'><a href='./auth'> LOGIN</a></td>
-			<td width="100px" align='center'><a href='./register'>REGISTER</a></td>
-		</tr>
-	</table>
-
 
 <c:choose>
 <c:when test = "${showForm == 'true'}">

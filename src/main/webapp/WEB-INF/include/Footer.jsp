@@ -24,7 +24,7 @@
 			</c:when>
 			<c:otherwise>
 				<li><a href="./correct">Редактирование</a></li>
-				<li><a href="./authed">Выход</a></li>
+				<li><a href="./auth?logOut=ok">Выход</a></li>
 			</c:otherwise>
 		</c:choose>
 		<li><a href="./cart">Корзина</a></li>

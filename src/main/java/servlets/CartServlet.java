@@ -43,8 +43,6 @@ public class CartServlet extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/CartView.jsp");
-		// request.setAttribute("productList", (List<Product>)
-		// session.getAttribute("cart"));
 		request.setAttribute("productMap", (Map<Product, Integer>) session.getAttribute("cart"));
 		rd.forward(request, response);
 	}
@@ -57,88 +55,76 @@ public class CartServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		System.out.println("Clear Cart: " + request.getParameter("ClearCart"));
+		System.out.println("Product to Remove: " + request.getParameter("productToRemove"));
+		System.out.println("Product to Recount: " + request.getParameter("recountProduct"));
+		System.out.println("Product to Buy: " + request.getParameter("productToBuy"));
+		System.out.println("Quantity: " + request.getParameter("qnt"));
+
 		System.out.println(request.getParameter("submit"));
 		HttpSession session = request.getSession();
-
 		long productId;
 		int numberGeneralProducts;
 		Product product;
 
-		if (request.getParameter("productToRemove") !=null) {
-								
+		if (request.getParameter("productToRemove") != null) {
+
 			productId = Integer.parseInt(request.getParameter("productToRemove"));
 			product = new MySQLProductDAO().getProductById(productId);
-			
-			Map <Product, Integer> cartMap;
+			Map<Product, Integer> cartMap;
 			cartMap = (Map<Product, Integer>) session.getAttribute("cart");
-			long numberCurrentProduct=0;
+			long numberCurrentProduct = 0;
 			numberGeneralProducts = (int) (session.getAttribute("numberGeneralProducts"));
-						
+
 			if (cartMap.keySet().contains(product)) {
 				numberCurrentProduct = cartMap.get(product);
 				numberGeneralProducts -= numberCurrentProduct;
 				session.setAttribute("numberGeneralProducts", numberGeneralProducts);
 				cartMap.remove(product);
+				System.out.println("Removing product: " + productId);
+				session.setAttribute("cart", cartMap);
+				}
+		}
+
+		if (request.getParameter("recountProduct") != null) {
+
+			productId = Integer.parseInt(request.getParameter("recountProduct"));
+			product = new MySQLProductDAO().getProductById(productId);
+			numberGeneralProducts = (int) (session.getAttribute("numberGeneralProducts"));
+			System.out.println("Number General Before recount:" + numberGeneralProducts);
+			Map<Product, Integer> cartMap;
+			cartMap = (Map<Product, Integer>) session.getAttribute("cart");
+
+			if (cartMap.keySet().contains(product)) {
+			   long numberCurrentProduct = Integer.parseInt(request.getParameter("qnt"));
+				if (numberCurrentProduct > 0) {
+					int numberCurrentProductOld = cartMap.get(product);
+					int difference = (int) numberCurrentProduct - numberCurrentProductOld;
+					cartMap.put(product, (int) numberCurrentProduct);
+					System.out.println("Number of Current Product after recount: " + numberCurrentProduct);
+					numberGeneralProducts += difference;
+				} else {
+					numberCurrentProduct = cartMap.get(product);
+					numberGeneralProducts -= numberCurrentProduct;
+					cartMap.remove(product);
+					System.out.println("Removing product: " + productId);
+					
+				}
+				session.setAttribute("numberGeneralProducts", numberGeneralProducts);
+				session.setAttribute("cart", cartMap);
 			}
-			
 		}
 		
-		if (request.getParameter("submit") != null && request.getParameter("submit").equals("+")) {
-
-			productId = Integer.parseInt(request.getParameter("productToRemoveBuy"));
-			product = new MySQLProductDAO().getProductById(productId);
-			numberGeneralProducts = (int) (session.getAttribute("numberGeneralProducts"));
-			System.out.println("Number General Before adding:" + numberGeneralProducts);
-			numberGeneralProducts++;
-			System.out.println("Number General After adding:" + numberGeneralProducts);
-			session.setAttribute("numberGeneralProducts", numberGeneralProducts);
-
-			Map<Product, Integer> cartMap;
-			cartMap = (Map<Product, Integer>) session.getAttribute("cart");
-			long numberCurrentProduct = 0;
-
-			numberCurrentProduct = cartMap.get(product);
-			System.out.println("Number of Current Product before increment: " + numberCurrentProduct);
-			cartMap.put(product, (int) ++numberCurrentProduct);
-			System.out.println("Product++");
-			System.out.println("Number of Current Product after increment: " + numberCurrentProduct);
-		}
-
-		if (request.getParameter("submit") != null && request.getParameter("submit").equals("+")) {
-
-			productId = Integer.parseInt(request.getParameter("productToBuy"));
-			product = new MySQLProductDAO().getProductById(productId);
-
-			numberGeneralProducts = (int) (session.getAttribute("numberGeneralProducts"));
-			System.out.println("Number General Before deleting:" + numberGeneralProducts);
-			numberGeneralProducts--;
-			System.out.println("Number General After deleting:" + numberGeneralProducts);
-			session.setAttribute("numberGeneralProducts", numberGeneralProducts);
-
-			Map<Product, Integer> cartMap;
-			cartMap = (Map<Product, Integer>) session.getAttribute("cart");
-
-			long numberCurrentProduct = 0;
-
-			numberCurrentProduct = cartMap.get(product);
-			System.out.println("Number of Current Product before deleting: " + numberCurrentProduct);
-			if (numberCurrentProduct > 1) {
-				cartMap.put(product, (int) --numberCurrentProduct);
-			} else {
-				cartMap.remove(product);
-			}
-
-		}
-
-		if (request.getParameter("ClearCart") != null && request.getParameter("submit") == null && request.getParameter("productToRemove") == null) {
+		if (request.getParameter("ClearCart") != null) {
 			System.out.println(request.getParameter("ClearCart"));
 			numberGeneralProducts = 0;
 			session.setAttribute("cart", null);
 			session.setAttribute("numberGeneralProducts", numberGeneralProducts);
 		}
 
-		if (request.getParameter("productToBuy") != null && request.getParameter("ClearCart") == null) {
+		if (request.getParameter("productToBuy") != null && request.getParameter("qnt") != null) {
 
+			Integer qnt = Integer.parseInt(request.getParameter("qnt"));
 			productId = Integer.parseInt(request.getParameter("productToBuy"));
 			product = new MySQLProductDAO().getProductById(productId);
 
@@ -146,12 +132,12 @@ public class CartServlet extends HttpServlet {
 			long numberCurrentProduct = 0;
 
 			if (session.getAttribute("cart") != null) {
+
 				System.out.println("Old cart");
-				boolean isNewProduct = true;
 				cartMap = (Map<Product, Integer>) session.getAttribute("cart");
 				numberGeneralProducts = (int) (session.getAttribute("numberGeneralProducts"));
 				System.out.println("Number General Before adding:" + numberGeneralProducts);
-				numberGeneralProducts++;
+				numberGeneralProducts += qnt;
 				System.out.println("Number General After adding:" + numberGeneralProducts);
 
 				System.out.println(cartMap.keySet().contains(product));
@@ -161,24 +147,23 @@ public class CartServlet extends HttpServlet {
 					System.out.println("It`s ProductId " + productId);
 					numberCurrentProduct = cartMap.get(product);
 					System.out.println("Number of Current Product is: " + numberCurrentProduct);
-					cartMap.put(product, (int) ++numberCurrentProduct);
+					cartMap.put(product, (int) numberCurrentProduct + qnt);
 					System.out.println("Adding Product");
-					System.out.println("Number of Current Product after adding is: " + numberCurrentProduct);
-					isNewProduct = false;
+					System.out.println("Number of Current Product after adding is: " + numberCurrentProduct + qnt);
 				} else {
 					System.out.println("This is new product");
 					System.out.println("Number of Current Product is: " + numberCurrentProduct);
-					cartMap.put(product, (int) ++numberCurrentProduct);
-					System.out.println("Number of Current Product after adding is: " + numberCurrentProduct);
+					cartMap.put(product, (int) numberCurrentProduct + qnt);
+					System.out.println("Number of Current Product after adding is: " + (numberCurrentProduct + qnt));
 				}
 
 			} else {
 				System.out.println("New cart");
 				cartMap = new HashMap<Product, Integer>();
 				System.out.println("Number of Current Product is: " + numberCurrentProduct);
-				cartMap.put(product, (int) ++numberCurrentProduct);
-				System.out.println("Number of Current Product after adding is: " + numberCurrentProduct);
-				numberGeneralProducts = 1;
+				cartMap.put(product, (int) qnt);
+				System.out.println("Number of Current Product after adding is: " + (numberCurrentProduct + qnt));
+				numberGeneralProducts = qnt;
 				System.out.println("Number of General Products:" + numberGeneralProducts);
 			}
 
@@ -188,7 +173,7 @@ public class CartServlet extends HttpServlet {
 			session.setAttribute("numberGeneralProducts", numberGeneralProducts);
 
 		}
-		response.sendRedirect("./products");
+		response.sendRedirect("./cart");
 	}
 
 }

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ page isELIgnored="false"%>
 <%@ include file="/WEB-INF/include/Header.jsp"%>
-
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
 
 <!DOCTYPE html>
 <html>
@@ -14,38 +14,120 @@
 
 <h1>Cart Page</h1>
 <div style="color: white">
-<form action="./cart" method="post">
-	<table border='1' width = "300">
-	
-			<c:forEach var="product" items="${productMap.entrySet()}">
-				<tr align='center'>
-					<td width = "30"><img src="./productImage/${product.getKey().id}.jpg"
-						height="25"></td>
-					<td width="80"><input type="hidden" name="productToBuy"
-						value="${product.getKey().id}" /> ${product.getKey().name}</td>
-					<td width="20">${product.getKey().price}</td>
-					<td width="20"><input type="hidden" name="productToBuy"
-						value="" /> ${product.getValue()}</td>
-			<!-- 		<td width="20"><input id="increment${product.getKey().id}" type="submit"
-						name="submit" value="+" /></td>
-					<td width="20"><input id="decrement${product.getKey().id}" type="submit"
-						name="submit" value="-" /></td> -->
-					<c:set var = "Summ" value = "${Summ + (product.getValue() * product.getKey().price)}" />
-					<td width="30">${product.getValue() * product.getKey().price}</td>
-			</c:forEach>
-	</table>	
-	<table border='1' width = "300">
-	<tr>
-				<td align = "center"><input type="hidden" name="ClearCart" value="Ok" /> <input
-					type="submit" value="ClearCart" /></td>
-				<td width = "75" align = "center"> Final Summ: </td>
-				<td width = "45" align = "center"> ${Summ} </td>
-			</tr>
-	</table>
-</form>
+	<c:choose>
+		<c:when test="${cart != null}">
+			<form action="./cart" method="post">
+				<table border='1' width="400">
+
+					<c:forEach var="product" items="${productMap.entrySet()}">
+						<tr align='center'>
+							<td width="30"><img
+								src="./productImage/${product.getKey().id}.jpg" height="25"></td>
+							<td width="80"><input type="hidden" name="productToBuy"
+								value="${product.getKey().id}" /> ${product.getKey().name}</td>
+							<td width="20">${product.getKey().price}</td>
+							<td width="20"><input type="hidden" name="productToBuy"
+								value="" />
+								<div id="numberProduct${product.getKey().id}">
+									${product.getValue()}</div></td>
+							<c:set var="Summ"
+								value="${Summ + (product.getValue() * product.getKey().price)}" />
+							<td width="30">${product.getValue() * product.getKey().price}</td>
+							<td width="20"><input type="submit" value="-"
+								onclick="minus(${product.getKey().id})"></td>
+							<td width="20"><input type="submit" value="+"
+								onclick="plus(${product.getKey().id})"></td>
+							<td width="20"><input type="submit" value="remove"
+								onclick="remove(${product.getKey().id})" /></td>
+					</c:forEach>
+				</table>
+				<table border='1' width="400">
+					<tr>
+						<td align="center"><input type="submit" value="ClearCart"
+							onclick="clearCart()" /></td>
+						<td width="75" align="center">Final Summ:</td>
+						<td width="45" align="center">${Summ}</td>
+					</tr>
+				</table>
+			</form>
+		</c:when>
+		<c:otherwise>
+			<h3 align = "center">Your cart is empty</h3>
+		</c:otherwise>
+	</c:choose>
 </div>
 
 </html>
 
 
 <%@ include file="/WEB-INF/include/Footer.jsp"%>
+
+<script>
+function minus(id) {
+	var number = document.getElementById("numberProduct" + id).innerHTML;	
+	number--;
+	document.getElementById("numberProduct" + id).innerHTML = number;
+	$.ajax({
+	        url:     "./cart", 
+	        type:     "POST", 
+	        dataType: "html", 
+			data: "recountProduct=" + id + "&qnt=" + number,
+	        success: function(response) { 
+	 		
+	        },
+	        error: function(response) { // Данные не отправлены
+	            document.getElementById(result_form).innerHTML = "Ошибка. Данные не отправленны.";
+	        }
+	    });
+	}
+
+	function plus(id){
+		var number = document.getElementById("numberProduct"+id).innerHTML;
+		number ++;
+		document.getElementById("numberProduct" + id).innerHTML = number;
+		$.ajax({
+	        url:     "./cart", 
+	        type:     "POST", 
+	        dataType: "html", 
+			data: "recountProduct=" + id + "&qnt=" + number,
+	        success: function(response) { 
+	 		
+	        },
+	        error: function(response) { // Данные не отправлены
+	            document.getElementById(result_form).innerHTML = "Ошибка. Данные не отправленны.";
+	        }
+	    });
+		
+	}
+
+	function remove(id) {
+		var number = document.getElementById("numberProduct"+id).innerHTML;
+	$.ajax({
+	        url:     "./cart", 
+	        type:     "POST", 
+	        dataType: "html", 
+			data: "productToRemove=" + id + "&qnt=" + number,
+	        success: function(response) { 
+	 		
+	        },
+	        error: function(response) { // Данные не отправлены
+	            document.getElementById(result_form).innerHTML = "Ошибка. Данные не отправленны.";
+	        }
+	    });
+	}
+	
+	function clearCart(id) {
+		$.ajax({
+	        url:     "./cart", 
+	        type:     "POST", 
+	        dataType: "html", 
+			data: "ClearCart=Ok",
+	        success: function(response) { 
+	 		
+	        },
+	        error: function(response) { // Данные не отправлены
+	            document.getElementById(result_form).innerHTML = "Ошибка. Данные не отправленны.";
+	        }
+	    });
+	}
+</script>
